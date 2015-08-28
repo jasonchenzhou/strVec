@@ -4,10 +4,12 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <list>
 
 class strVec{
 public:
 	strVec():elements(nullptr), first_free(nullptr), cap(nullptr){}
+	strVec(std::initializer_list<std::string>);
 	strVec(const strVec&);
 	strVec& operator=(const strVec&);
 	~strVec();

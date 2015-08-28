@@ -1,10 +1,6 @@
 #include "strVec.h"
 
-void strVec::push_back(const std::string &s)
-{
-    chk_n_alloc();
-    alloc.construct(first_free++, s);
-}
+
 
 std::pair<std::string*, std::string*> strVec::alloc_n_copy(const std::string* b, const std::string* e){
 	auto data = alloc.allocate(e -b);
@@ -13,16 +9,24 @@ std::pair<std::string*, std::string*> strVec::alloc_n_copy(const std::string* b,
 
 
 void strVec::free(){
-	if(elements){
+	/*if(elements){
 		for(auto p=first_free; p!=elements; ){
 			alloc.destroy(--p);
 		}
 		alloc.deallocate(elements, cap-elements);
-	}
+	}*/
+	std::for_each(elements, first_free, [this](std::string &rhs){alloc.destroy(&rhs);});
+
 }
 
 strVec::strVec(const strVec &rfs){
     auto data = alloc_n_copy(rfs.begin(), rfs.end());
+    elements = data.first;
+    first_free = cap = data.second;
+}
+
+strVec::strVec(std::initializer_list<std::string> li){
+    auto data = alloc_n_copy(li.begin(), li.end());
     elements = data.first;
     first_free = cap = data.second;
 }
@@ -65,6 +69,11 @@ void strVec::reallocate(){
 	cap = elements + newCapacity;
 }
 
+void strVec::push_back(const std::string &s)
+{
+    chk_n_alloc();
+    alloc.construct(first_free++, s);
+}
 
 void strVec::reserve(size_t new_cap)
 {
@@ -97,5 +106,8 @@ int main()
 	v.push_back("billy");
 	std::cout<<*v.begin()<<std::endl;
 	for(auto elem : v)  std::cout<<elem<<std::endl;
+	//std::list<std::string> l = {"good", "awesome"};
+    strVec v2({"good", "awesome"});
+    for(auto elem : v2)  std::cout<<elem<<std::endl;
     return 0;
 }
